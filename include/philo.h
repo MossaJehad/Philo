@@ -6,7 +6,7 @@
 /*   By: mhasoneh <mhasoneh@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 20:39:22 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/03 14:22:27 by mhasoneh         ###   ########.fr       */
+/*   Updated: 2025/09/03 16:51:02 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,14 @@
 # include <stdlib.h>
 # include <sys/time.h>
 # include <unistd.h>
+
+# define GREEN		"\033[1;32m"
+# define CYAN		"\033[1;36m"
+# define YELLOW		"\033[1;33m"
+# define RED		"\033[1;31m"
+# define BLUE		"\033[1;34m"
+# define MAGENTA	"\033[1;35m"
+# define RESET		"\033[0m"
 
 typedef struct s_data	t_data;
 
@@ -53,48 +61,29 @@ typedef struct s_data
 	t_philo				philos[250];
 }						t_data;
 
-// routine
+int						philo_eat_one_philo(t_data *table);
+int						philo_eat(t_philo *philo);
+void					smart_smart_usleep(long duration_ms);
 void					*philo_routine(void *p);
 int						is_dead(t_philo *p);
-
-// sleep
-int						philo_sleep(t_philo *p);
-
-// philo_think
-int						philo_philo_think(t_philo *p);
-
-// eat
-void					update_meal(t_philo *p);
-int						philo_eat(t_philo *p);
 int						handle_forks(t_philo *p, int f);
-int						start_start_dinner(t_philo *p);
 int						lock_forks(t_philo *p,
 							pthread_mutex_t **first,
 							pthread_mutex_t **second);
 int						lock_second(t_philo *p,
 							pthread_mutex_t *first,
 							pthread_mutex_t *second);
-
-// init_all
-int						init_all_mutex(t_data *table);
-int						init_all_philos(t_data *table);
-int						init_all_all(t_data *table, char **argv);
-
-// threads
 int						create_threads(t_data *table);
 void					join_threads(t_data *table);
 void					cleanup_mutexes(t_data *table);
 void					monitoringing(t_data *table);
 int						check_dead(t_data *table, int i);
 int						check_full(t_data *table, int *full, int i);
-
-// utils_thread
 long					get_time(t_philo *p, int f);
 int						print_action(t_philo *p, char *msg);
 int						wait_time(t_philo *p, int time);
-
-// utils
 int						to_int(char *s);
 int						is_num(char *s);
-
+int						init_all(t_data *table, char **argv);
+int						start_dinner(t_philo *philo);
 #endif

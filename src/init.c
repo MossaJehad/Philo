@@ -1,38 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_all.c                                             :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mhasoneh <mhasoneh@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:58:46 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/03 14:20:36 by mhasoneh         ###   ########.fr       */
+/*   Updated: 2025/09/03 16:03:11 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../include/philo.h"
 
-
-int	init_all_mutex(t_data *table)
+static int	init_mutexes(t_data *table)
 {
 	int	i;
 
 	i = 0;
 	while (i < table->count)
 	{
-		if (pthread_mutex_init_all(&(table->forks[i]), NULL))
+		if (pthread_mutex_init(&(table->forks[i]), NULL))
 			return (1);
 		i++;
 	}
-	if (pthread_mutex_init_all(&table->last_meal_mutex, NULL)
-		|| pthread_mutex_init_all(&table->print_mtx, NULL)
-		|| pthread_mutex_init_all(&table->meals_mutex, NULL)
-		|| pthread_mutex_init_all(&table->can_speak_mutex, NULL)
-		|| pthread_mutex_init_all(&table->start_mtx, NULL))
+	if (pthread_mutex_init(&table->last_meal_mtx, NULL)
+		|| pthread_mutex_init(&table->print_mtx, NULL)
+		|| pthread_mutex_init(&table->meals_mtx, NULL)
+		|| pthread_mutex_init(&table->speak_mtx, NULL)
+		|| pthread_mutex_init(&table->start_mtx, NULL))
 		return (1);
 	return (0);
 }
 
-int	init_all_philo(t_data *table)
+static int	init_philos(t_data *table)
 {
 	int	i;
 
@@ -53,7 +53,7 @@ int	init_all_philo(t_data *table)
 	return (0);
 }
 
-int	init_all_max_meals(t_data *table, char *str)
+static int	init_max_meals(t_data *table, char *str)
 {
 	if (!is_num(str))
 		return (1);
@@ -77,16 +77,16 @@ int	init_all(t_data *table, char **argv)
 	table->can_speak = 1;
 	if (argv[5])
 	{
-		if (init_all_max_meals(table, argv[5]))
+		if (init_max_meals(table, argv[5]))
 			return (1);
 	}
 	if (table->count <= 0 || table->die_time <= 0
 		|| table->eat_time <= 0 || table->sleep_time <= 0
 		|| table->count > 250)
 		return (1);
-	if (init_all_mutex(table))
+	if (init_mutexes(table))
 		return (1);
-	if (init_all_philo(table))
+	if (init_philos(table))
 		return (1);
 	return (0);
 }
@@ -101,9 +101,9 @@ void	cleanup_mutexes(t_data *table)
 		pthread_mutex_destroy(&table->forks[i]);
 		i++;
 	}
-	pthread_mutex_destroy(&table->meals_mutex);
+	pthread_mutex_destroy(&table->meals_mtx);
 	pthread_mutex_destroy(&table->print_mtx);
-	pthread_mutex_destroy(&table->last_meal_mutex);
-	pthread_mutex_destroy(&table->can_speak_mutex);
+	pthread_mutex_destroy(&table->last_meal_mtx);
+	pthread_mutex_destroy(&table->speak_mtx);
 	pthread_mutex_destroy(&table->start_mtx);
 }
