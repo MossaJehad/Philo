@@ -6,11 +6,12 @@
 /*   By: mhasoneh <mhasoneh@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:58:46 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/03 17:05:11 by mhasoneh         ###   ########.fr       */
+/*   Updated: 2025/09/03 19:15:07 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
+#include <stdio.h>
 #include <unistd.h>
 
 long	get_time(t_philo *philo, int f)
@@ -19,9 +20,10 @@ long	get_time(t_philo *philo, int f)
 	long			current_time;
 	long			begin_time;
 
+	(void)f;
 	gettimeofday(&c_time, NULL);
 	current_time = (c_time.tv_sec * 1000000 + c_time.tv_usec) / 1000;
-	if (f && philo)
+	if (philo)
 	{
 		pthread_mutex_lock(&philo->table->start_mtx);
 		begin_time = philo->table->start_time;

@@ -6,7 +6,7 @@
 /*   By: mhasoneh <mhasoneh@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:58:46 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/03 16:54:47 by mhasoneh         ###   ########.fr       */
+/*   Updated: 2025/09/03 18:52:04 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,13 @@ void	*philo_routine(void *ph)
 			break ;
 		if (is_dead(philo))
 			break ;
-		if (print_action(philo, MAGENTA"is sleeping"RESET))
-			break ;
-		if (wait_time(philo, philo->table->sleep_time))
+		if (print_action(philo, YELLOW"is thinking"RESET))
 			break ;
 		if (is_dead(philo))
 			break ;
-		if (print_action(philo, YELLOW"is thinking"RESET))
+		if (print_action(philo, MAGENTA"is sleeping"RESET))
+			break ;
+		if (wait_time(philo, philo->table->sleep_time))
 			break ;
 	}
 	return (NULL);

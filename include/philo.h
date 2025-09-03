@@ -6,7 +6,7 @@
 /*   By: mhasoneh <mhasoneh@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 20:39:22 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/03 16:51:02 by mhasoneh         ###   ########.fr       */
+/*   Updated: 2025/09/03 19:04:42 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ typedef struct s_philo
 	int					id;
 	int					is_dead;
 	int					meals;
-	int					has_fork;
 	long				last_meal;
 	pthread_t			thread_id;
 	pthread_mutex_t		*fork_r;
@@ -62,17 +61,13 @@ typedef struct s_data
 }						t_data;
 
 int						philo_eat_one_philo(t_data *table);
-int						philo_eat(t_philo *philo);
 void					smart_smart_usleep(long duration_ms);
 void					*philo_routine(void *p);
 int						is_dead(t_philo *p);
 int						handle_forks(t_philo *p, int f);
-int						lock_forks(t_philo *p,
+void						lock_forks(t_philo *p,
 							pthread_mutex_t **first,
 							pthread_mutex_t **second);
-int						lock_second(t_philo *p,
-							pthread_mutex_t *first,
-							pthread_mutex_t *second);
 int						create_threads(t_data *table);
 void					join_threads(t_data *table);
 void					cleanup_mutexes(t_data *table);
@@ -86,4 +81,6 @@ int						to_int(char *s);
 int						is_num(char *s);
 int						init_all(t_data *table, char **argv);
 int						start_dinner(t_philo *philo);
+int						update_meal(t_philo *philo);
+void					unlock_forks(t_philo *philo);
 #endif

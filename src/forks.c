@@ -6,29 +6,40 @@
 /*   By: mhasoneh <mhasoneh@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 15:27:04 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/03 17:05:49 by mhasoneh         ###   ########.fr       */
+/*   Updated: 2025/09/03 19:14:56 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
 #include <pthread.h>
 
-int	lock_forks(t_philo *philo, pthread_mutex_t **first,
+void	lock_forks(t_philo *philo, pthread_mutex_t **first,
 		pthread_mutex_t **second)
 {
-	if (philo->fork_l < philo->fork_r)
+	if (philo->id % 2 == 0)
 	{
 		*first = philo->fork_l;
 		*second = philo->fork_r;
-		philo->has_fork = 1;
 	}
 	else
 	{
 		*first = philo->fork_r;
 		*second = philo->fork_l;
-		philo->has_fork = 0;
 	}
-	return (0);
+}
+
+void	unlock_forks(t_philo *philo)
+{
+	if (philo->id % 2 == 0)
+	{
+		pthread_mutex_unlock(philo->fork_r);
+		pthread_mutex_unlock(philo->fork_l);
+	}
+	else
+	{
+		pthread_mutex_unlock(philo->fork_l);
+		pthread_mutex_unlock(philo->fork_r);
+	}
 }
 
 int	handle_forks(t_philo *philo, int f)
@@ -37,14 +48,21 @@ int	handle_forks(t_philo *philo, int f)
 	pthread_mutex_t	*second;
 
 	(void)f;
-	if (lock_forks(philo, &first, &second))
-		return (1);
+	lock_forks(philo, &first, &second);
 	pthread_mutex_lock(first);
+	if (is_dead(philo))
+	{
+		pthread_mutex_unlock(first);
+		return (1);
+	}
 	print_action(philo, CYAN"has taken a fork (left)"RESET);
 	pthread_mutex_lock(second);
+	if (is_dead(philo))
+	{
+		pthread_mutex_unlock(second);
+		pthread_mutex_unlock(first);
+		return (1);
+	}
 	print_action(philo, CYAN"has taken a fork (right)"RESET);
-	philo_eat(philo);
-	pthread_mutex_unlock(second);
-	pthread_mutex_unlock(first);
 	return (0);
 }
