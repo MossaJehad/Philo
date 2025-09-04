@@ -3,46 +3,45 @@
 /*                                                        :::      ::::::::   */
 /*   philo_eat.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhasoneh <mhasoneh@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: mhasoneh <mhasoneh@student.42amman.com     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/23 19:58:46 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/03 19:13:07 by mhasoneh         ###   ########.fr       */
+/*   Created: 2025/09/04 00:00:00 by h improveme       #+#    #+#             */
+/*   Updated: 2025/09/04 12:19:09 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
-#include <pthread.h>
 
 int	update_meal(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->table->last_meal_mtx);
+	long	eating_start;
+
+	eating_start = get_timestamp_in_ms();
+	pthread_mutex_lock(&philo->last_meal_mutex);
+	gettimeofday(&philo->start, NULL);
 	philo->last_meal = get_time(philo, 1);
-	pthread_mutex_unlock(&philo->table->last_meal_mtx);
-	pthread_mutex_lock(&philo->table->meals_mtx);
-	philo->meals++;
-	pthread_mutex_unlock(&philo->table->meals_mtx);
+	pthread_mutex_unlock(&philo->last_meal_mutex);
+	print_with_safety(philo, BLUE"is eating"RESET);
+	while (!is_simulation_over(philo) && (get_timestamp_in_ms() - eating_start < philo->input[TIME_TO_EAT]))
+		usleep(1000);
 	return (0);
 }
 
 int	start_dinner(t_philo *philo)
 {
-	if (handle_forks(philo, 1))
+	if (handle_forks(philo))
 		return (1);
-	if (print_action(philo, BLUE"is eating"RESET))
-	{
-		unlock_forks(philo);
-		return (1);
-	}
 	if (update_meal(philo))
 	{
 		unlock_forks(philo);
 		return (1);
 	}
-	if (wait_time(philo, philo->table->eat_time))
-	{
-		unlock_forks(philo);
-		return (1);
-	}
 	unlock_forks(philo);
-	return (0);
+	if (!is_simulation_over(philo))
+	{
+		pthread_mutex_lock(&philo->meal_mutex);
+		philo->meals++;
+		pthread_mutex_unlock(&philo->meal_mutex);
+	}
+	return (!is_simulation_over(philo) ? 0 : 1);
 }

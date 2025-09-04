@@ -3,16 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhasoneh <mhasoneh@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: mhasoneh <mhasoneh@student.42amman.com     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/23 19:58:46 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/03 19:15:07 by mhasoneh         ###   ########.fr       */
+/*   Created: 2025/09/04 00:00:00 by h improveme       #+#    #+#             */
+/*   Updated: 2025/09/04 12:08:43 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
-#include <stdio.h>
-#include <unistd.h>
+
+long	get_timestamp_in_ms(void)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+}
+
+int	get_elapsed_time(struct timeval start)
+{
+	return ((int)(get_timestamp_in_ms() - ((start.tv_sec * 1000)
+			+ (start.tv_usec / 1000))));
+}
 
 long	get_time(t_philo *philo, int f)
 {
@@ -33,37 +45,55 @@ long	get_time(t_philo *philo, int f)
 	return (current_time);
 }
 
-int	print_action(t_philo *philo, char *msg)
+void	print_with_safety(t_philo *philo, char *status)
 {
-	long	timephilo;
-
-	pthread_mutex_lock(&philo->table->speak_mtx);
-	if (!philo->table->can_speak)
+	pthread_mutex_lock(&philo->table->stop_mtx);
+	if (philo->table->stop == 0)
 	{
-		pthread_mutex_unlock(&philo->table->speak_mtx);
-		return (1);
+		pthread_mutex_lock(&philo->table->print_mtx);
+		printf("%d %d %s\n", get_elapsed_time(philo->start), philo->id + 1, status);
+		pthread_mutex_unlock(&philo->table->print_mtx);
 	}
-	pthread_mutex_unlock(&philo->table->speak_mtx);
-	pthread_mutex_lock(&philo->table->speak_mtx);
-	timephilo = get_time(philo, 1);
-	if (philo->table->can_speak)
-		printf("%ld   philo [%d] %s\n", timephilo, philo->id + 1, msg);
-	pthread_mutex_unlock(&philo->table->speak_mtx);
-	return (0);
+	pthread_mutex_unlock(&philo->table->stop_mtx);
+}
+
+void	sleep_and_check(t_data *table, long ms)
+{
+	long	start;
+	long	end;
+
+	start = get_timestamp_in_ms();
+	end = start + ms;
+	while (get_timestamp_in_ms() < end)
+	{
+		pthread_mutex_lock(&table->stop_mtx);
+		if (table->stop)
+		{
+			pthread_mutex_unlock(&table->stop_mtx);
+			break;
+		}
+		pthread_mutex_unlock(&table->stop_mtx);
+		usleep(500);
+	}
 }
 
 int	wait_time(t_philo *philo, int time)
 {
-	long	start;
-	long	now;
+	int	time_slept;
+	int	sleep_time;
 
-	start = get_time(philo, 1);
-	while (1)
+	if (!is_simulation_over(philo))
 	{
-		now = get_time(philo, 1);
-		if (is_dead(philo) || (now - start >= time))
-			break ;
-		usleep(100);
+		time_slept = 0;
+		while (time_slept < time && !is_simulation_over(philo))
+		{
+			if (time - time_slept < 10)
+				sleep_time = time - time_slept;
+			else
+				sleep_time = 10;
+			usleep(sleep_time * 1000);
+			time_slept += sleep_time;
+		}
 	}
 	return (0);
 }

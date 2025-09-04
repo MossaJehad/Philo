@@ -3,29 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   forks.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhasoneh <mhasoneh@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: mhasoneh <mhasoneh@student.42amman.com     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/03 15:27:04 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/03 19:14:56 by mhasoneh         ###   ########.fr       */
+/*   Created: 2025/09/04 00:00:00 by h improveme       #+#    #+#             */
+/*   Updated: 2025/09/04 12:17:08 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
-#include <pthread.h>
 
-void	lock_forks(t_philo *philo, pthread_mutex_t **first,
-		pthread_mutex_t **second)
+static int	take_fork(pthread_mutex_t *fork, t_philo *philo, char *msg)
 {
-	if (philo->id % 2 == 0)
+	if (is_simulation_over(philo))
+		return (0);
+	pthread_mutex_lock(fork);
+	if (is_simulation_over(philo))
 	{
-		*first = philo->fork_l;
-		*second = philo->fork_r;
+		pthread_mutex_unlock(fork);
+		return (0);
 	}
-	else
-	{
-		*first = philo->fork_r;
-		*second = philo->fork_l;
-	}
+	print_with_safety(philo, msg);
+	return (1);
 }
 
 void	unlock_forks(t_philo *philo)
@@ -42,27 +40,27 @@ void	unlock_forks(t_philo *philo)
 	}
 }
 
-int	handle_forks(t_philo *philo, int f)
+int	handle_forks(t_philo *philo)
 {
-	pthread_mutex_t	*first;
-	pthread_mutex_t	*second;
-
-	(void)f;
-	lock_forks(philo, &first, &second);
-	pthread_mutex_lock(first);
-	if (is_dead(philo))
+	if (philo->id % 2 == 0)
 	{
-		pthread_mutex_unlock(first);
-		return (1);
+		if (!take_fork(philo->fork_l, philo, CYAN"has taken a fork (left)"RESET))
+			return (1);
+		if (!take_fork(philo->fork_r, philo, CYAN"has taken a fork (right)"RESET))
+		{
+			pthread_mutex_unlock(philo->fork_l);
+			return (1);
+		}
 	}
-	print_action(philo, CYAN"has taken a fork (left)"RESET);
-	pthread_mutex_lock(second);
-	if (is_dead(philo))
+	else
 	{
-		pthread_mutex_unlock(second);
-		pthread_mutex_unlock(first);
-		return (1);
+		if (!take_fork(philo->fork_r, philo, CYAN"has taken a fork (right)"RESET))
+			return (1);
+		if (!take_fork(philo->fork_l, philo, CYAN"has taken a fork (left)"RESET))
+		{
+			pthread_mutex_unlock(philo->fork_r);
+			return (1);
+		}
 	}
-	print_action(philo, CYAN"has taken a fork (right)"RESET);
 	return (0);
 }

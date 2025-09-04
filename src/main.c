@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhasoneh <mhasoneh@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: mhasoneh <mhasoneh@student.42amman.com     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/23 19:58:46 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/03 16:03:29 by mhasoneh         ###   ########.fr       */
+/*   Created: 2025/09/04 00:00:00 by h improveme       #+#    #+#             */
+/*   Updated: 2025/09/04 12:12:28 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
 
-static int	threads(t_data *table)
+static int	start_simulation(t_data *table)
 {
 	if (table->count == 1)
 	{
@@ -24,20 +24,33 @@ static int	threads(t_data *table)
 		return (1);
 	monitoringing(table);
 	join_threads(table);
-	cleanup_mutexes(table);
 	return (0);
+}
+
+static void	free_program(t_data *table)
+{
+	cleanup_mutexes(table);
+	if (table->input)
+		free(table->input);
+	if (table->forks)
+		free(table->forks);
 }
 
 int	main(int argc, char **argv)
 {
 	t_data	table;
 
+	memset(&table, 0, sizeof(t_data));
 	if ((argc != 5 && argc != 6) || init_all(&table, argv))
 	{
 		printf(RED"Wrong in arguments\n"RESET);
 		return (1);
 	}
-	if (threads(&table))
+	if (start_simulation(&table))
+	{
+		free_program(&table);
 		return (1);
+	}
+	free_program(&table);
 	return (0);
 }
