@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhasoneh <mhasoneh@student.42amman.com     +#+  +:+       +#+        */
+/*   By: mhasoneh <mhasoneh@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 00:00:00 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/04 18:39:12 by mhasoneh         ###   ########.fr       */
+/*   Updated: 2025/09/04 20:28:04 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,8 @@ typedef struct s_data
 int		ft_isspace(char c);
 int		to_int(char *s);
 int		is_num(char *s);
-
+int		validate_args(int argc, char **argv);
+int		*check_args(int argc, char **argv);
 // Time functions
 long	get_time(t_philo *philo, int f);
 int		print_action(t_philo *philo, char *msg);
@@ -97,7 +98,8 @@ int		init_all(t_data *table, char **argv);
 void	cleanup_mutexes(t_data *table);
 
 // Fork handling
-void	lock_forks(t_philo *philo, pthread_mutex_t **first, pthread_mutex_t **second);
+void	lock_forks(t_philo *philo, pthread_mutex_t **first,
+			pthread_mutex_t **second);
 void	unlock_forks(t_philo *philo);
 int		handle_forks(t_philo *philo);
 

@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhasoneh <mhasoneh@student.42amman.com     +#+  +:+       +#+        */
+/*   By: mhasoneh <mhasoneh@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 00:00:00 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/04 18:39:58 by mhasoneh         ###   ########.fr       */
+/*   Updated: 2025/09/04 20:31:15 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
 
-static int	is_starved(t_data *table, int i, long current_time_ms, long last_eat_time_ms)
+static int	is_starved(t_data *table, int i, long current_time_ms,
+		long last_eat_time_ms)
 {
 	if ((current_time_ms - last_eat_time_ms) > table->input[TIME_TO_DIE])
 	{
@@ -38,8 +39,8 @@ int	check_dead(t_data *table, int i)
 	pthread_mutex_lock(&table->philos[i].last_meal_mutex);
 	last_eat_time = table->philos[i].start;
 	pthread_mutex_unlock(&table->philos[i].last_meal_mutex);
-	last_eat_time_ms = (last_eat_time.tv_sec * 1000) + (last_eat_time.tv_usec / 1000);
-	
+	last_eat_time_ms = (last_eat_time.tv_sec * 1000) + (last_eat_time.tv_usec
+			/ 1000);
 	return (is_starved(table, i, current_time_ms, last_eat_time_ms));
 }
 
@@ -76,12 +77,11 @@ void	monitoringing(t_data *table)
 	sleep_and_check(table, 1);
 	while (!stop_flag)
 	{
-		i = 0;
-		while (i < table->count)
+		i = -1;
+		while (++i < table->count)
 		{
 			if (check_dead(table, i))
 				return ;
-			i++;
 		}
 		if (check_full(table))
 		{

@@ -43,7 +43,7 @@ int	main(int argc, char **argv)
 	memset(&table, 0, sizeof(t_data));
 	if ((argc != 5 && argc != 6) || init_all(&table, argv))
 	{
-		printf(RED"Wrong in arguments\n"RESET);
+		printf(RED "Wrong in arguments\n" RESET);
 		return (1);
 	}
 	if (start_simulation(&table))

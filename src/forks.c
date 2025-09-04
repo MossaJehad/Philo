@@ -12,7 +12,8 @@
 
 #include "../include/philo.h"
 
-static int	take_fork(pthread_mutex_t *fork, t_philo *philo, char *msg, char *color)
+static int	take_fork(pthread_mutex_t *fork, t_philo *philo, char *msg,
+		char *color)
 {
 	if (is_simulation_over(philo))
 		return (0);

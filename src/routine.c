@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   routine.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhasoneh <mhasoneh@student.42amman.com     +#+  +:+       +#+        */
+/*   By: mhasoneh <mhasoneh@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 00:00:00 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/04 18:39:50 by mhasoneh         ###   ########.fr       */
+/*   Updated: 2025/09/04 20:36:40 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	*lonely_routine(void *arg)
 	philo = (t_philo *)arg;
 	pthread_mutex_lock(philo->fork_r);
 	print_with_safety(philo, "has taken a fork " FORK_SYMBOL, CYAN);
-	sleep_and_check(philo->table, philo->input[TIME_TO_DIE] + 10);
+	sleep_and_check(philo->table, philo->input[TIME_TO_DIE]);
 	pthread_mutex_unlock(philo->fork_r);
 	return (NULL);
 }

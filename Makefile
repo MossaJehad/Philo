@@ -19,7 +19,8 @@ SRC_FILES	=	philo_eat.c \
 				main.c \
 				one_philo.c \
 				forks.c \
-				monitor.c
+				monitor.c \
+				time_util.c
 
 # Add src/ path
 SRC			=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))

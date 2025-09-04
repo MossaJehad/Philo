@@ -3,45 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhasoneh <mhasoneh@student.42amman.com     +#+  +:+       +#+        */
+/*   By: mhasoneh <mhasoneh@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 00:00:00 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/04 18:27:16 by mhasoneh         ###   ########.fr       */
+/*   Updated: 2025/09/04 20:27:05 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
-
-static int	*check_args(int argc, char **argv)
-{
-	int	*nums;
-	int	i;
-
-	if (argc < 5 || argc > 6)
-	{
-		printf("Error: Wrong number of arguments\n");
-		return (NULL);
-	}
-	i = 1;
-	while (i < argc)
-	{
-		if (!is_num(argv[i]))
-		{
-			printf("Error: Invalid argument\n");
-			return (NULL);
-		}
-		i++;
-	}
-	nums = malloc(sizeof(int) * 5);
-	if (!nums)
-		return (NULL);
-	nums[NUM_OF_PHILO] = to_int(argv[1]);
-	nums[TIME_TO_DIE] = to_int(argv[2]);
-	nums[TIME_TO_EAT] = to_int(argv[3]);
-	nums[TIME_TO_SLEEP] = to_int(argv[4]);
-	nums[NUM_TO_EAT] = (argc == 6) ? to_int(argv[5]) : -1;
-	return (nums);
-}
 
 static int	init_mutexes(t_data *table)
 {
@@ -106,9 +75,15 @@ static int	init_philos(t_data *table)
 	return (1);
 }
 
-int	init_all(t_data *table, char **argv)
+static int	init_input_data(t_data *table, char **argv)
 {
-	table->input = check_args(5 + (argv[5] ? 1 : 0), argv);
+	int	argc_val;
+
+	if (argv[5])
+		argc_val = 6;
+	else
+		argc_val = 5;
+	table->input = check_args(argc_val, argv);
 	if (!table->input)
 		return (1);
 	table->count = table->input[NUM_OF_PHILO];
@@ -119,13 +94,19 @@ int	init_all(t_data *table, char **argv)
 	table->start_time = 0;
 	table->can_speak = 1;
 	table->stop = 0;
-	if (table->count <= 0 || table->die_time <= 0
-		|| table->eat_time <= 0 || table->sleep_time <= 0
-		|| table->count > 250)
+	if (table->count <= 0 || table->die_time <= 0 || table->eat_time <= 0
+		|| table->sleep_time <= 0 || table->count > 250)
 	{
 		free(table->input);
 		return (1);
 	}
+	return (0);
+}
+
+int	init_all(t_data *table, char **argv)
+{
+	if (init_input_data(table, argv))
+		return (1);
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->count);
 	if (!table->forks)
 	{
@@ -145,22 +126,4 @@ int	init_all(t_data *table, char **argv)
 		return (1);
 	}
 	return (0);
-}
-
-void	cleanup_mutexes(t_data *table)
-{
-	int	i;
-
-	i = 0;
-	while (i < table->count)
-	{
-		pthread_mutex_destroy(&table->forks[i]);
-		pthread_mutex_destroy(&table->philos[i].meal_mutex);
-		pthread_mutex_destroy(&table->philos[i].last_meal_mutex);
-		i++;
-	}
-	pthread_mutex_destroy(&table->print_mtx);
-	pthread_mutex_destroy(&table->speak_mtx);
-	pthread_mutex_destroy(&table->start_mtx);
-	pthread_mutex_destroy(&table->stop_mtx);
 }
