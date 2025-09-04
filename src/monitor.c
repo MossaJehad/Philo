@@ -6,7 +6,7 @@
 /*   By: mhasoneh <mhasoneh@student.42amman.com     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 00:00:00 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/04 18:27:30 by mhasoneh         ###   ########.fr       */
+/*   Updated: 2025/09/04 18:39:58 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,7 @@ static int	is_starved(t_data *table, int i, long current_time_ms, long last_eat_
 		pthread_mutex_lock(&table->stop_mtx);
 		if (!table->stop)
 		{
-			pthread_mutex_lock(&table->print_mtx);
-			printf(RED"%d %d died\n"RESET, get_elapsed_time(table->philos[i].start), 
-				table->philos[i].id + 1);
-			pthread_mutex_unlock(&table->print_mtx);
+			print_death(&table->philos[i]);
 			table->stop = 1;
 		}
 		pthread_mutex_unlock(&table->stop_mtx);

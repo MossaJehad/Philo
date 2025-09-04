@@ -6,7 +6,7 @@
 /*   By: mhasoneh <mhasoneh@student.42amman.com     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 00:00:00 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/04 18:30:45 by mhasoneh         ###   ########.fr       */
+/*   Updated: 2025/09/04 18:39:50 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	is_simulation_over(t_philo *philo)
 static void	think(t_philo *philo)
 {
 	if (!is_simulation_over(philo))
-		print_with_safety(philo, YELLOW"is thinking"RESET);
+		print_with_safety(philo, "is thinking " THINK_SYMBOL, YELLOW);
 }
 
 void	*lonely_routine(void *arg)
@@ -46,7 +46,7 @@ void	*lonely_routine(void *arg)
 
 	philo = (t_philo *)arg;
 	pthread_mutex_lock(philo->fork_r);
-	print_with_safety(philo, CYAN"has taken a fork"RESET);
+	print_with_safety(philo, "has taken a fork " FORK_SYMBOL, CYAN);
 	sleep_and_check(philo->table, philo->input[TIME_TO_DIE] + 10);
 	pthread_mutex_unlock(philo->fork_r);
 	return (NULL);
@@ -69,7 +69,7 @@ void	*philo_routine(void *ph)
 			break ;
 		if (is_simulation_over(philo))
 			break ;
-		print_with_safety(philo, MAGENTA"is sleeping"RESET);
+		print_with_safety(philo, "is sleeping " SLEEP_SYMBOL, BLUE);
 		wait_time(philo, philo->table->sleep_time);
 		if (is_simulation_over(philo))
 			break ;

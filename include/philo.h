@@ -6,7 +6,7 @@
 /*   By: mhasoneh <mhasoneh@student.42amman.com     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 00:00:00 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/04 12:12:45 by mhasoneh         ###   ########.fr       */
+/*   Updated: 2025/09/04 18:39:12 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,22 @@
 # include <sys/time.h>
 # include <string.h>
 
-// Colors for output
-# define RED "\033[0;31m"
-# define BLUE "\033[0;34m"
-# define CYAN "\033[0;36m"
+// Colors for output with bold
+# define RED "\033[1;31m"
+# define GREEN "\033[1;32m"
 # define YELLOW "\033[1;33m"
-# define MAGENTA "\033[0;35m"
+# define BLUE "\033[1;34m"
+# define MAGENTA "\033[1;35m"
+# define CYAN "\033[1;36m"
+# define WHITE "\033[1;37m"
 # define RESET "\033[0m"
+
+// Emojis/symbols for actions
+# define FORK_SYMBOL "🍴"
+# define EAT_SYMBOL "🍝"
+# define SLEEP_SYMBOL "💤"
+# define THINK_SYMBOL "💭"
+# define DEATH_SYMBOL "💀"
 
 // Input array indices
 # define NUM_OF_PHILO 0
@@ -114,6 +123,7 @@ void	monitoringing(t_data *table);
 int		philo_eat_one_philo(t_data *table);
 
 // Safe printing
-void	print_with_safety(t_philo *philo, char *status);
+void	print_with_safety(t_philo *philo, char *status, char *color);
+void	print_death(t_philo *philo);
 
 #endif

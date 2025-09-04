@@ -6,7 +6,7 @@
 /*   By: mhasoneh <mhasoneh@student.42amman.com     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 00:00:00 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/04 18:26:08 by mhasoneh         ###   ########.fr       */
+/*   Updated: 2025/09/04 18:39:32 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,16 +45,31 @@ long	get_time(t_philo *philo, int f)
 	return (current_time);
 }
 
-void	print_with_safety(t_philo *philo, char *status)
+void	print_with_safety(t_philo *philo, char *status, char *color)
 {
+	int	timestamp;
+	
 	pthread_mutex_lock(&philo->table->stop_mtx);
 	if (philo->table->stop == 0)
 	{
 		pthread_mutex_lock(&philo->table->print_mtx);
-		printf("%d %d %s\n", get_elapsed_time(philo->start), philo->id + 1, status);
+		timestamp = get_elapsed_time(philo->table->program_start);
+		printf("%s%-4d %sphilo [%d] %s%s%s\n", 
+			WHITE, timestamp, RESET, philo->id + 1, color, status, RESET);
 		pthread_mutex_unlock(&philo->table->print_mtx);
 	}
 	pthread_mutex_unlock(&philo->table->stop_mtx);
+}
+
+void	print_death(t_philo *philo)
+{
+	int	timestamp;
+	
+	pthread_mutex_lock(&philo->table->print_mtx);
+	timestamp = get_elapsed_time(philo->table->program_start);
+	printf("%s%-4d %sphilo [%d] %s%s died%s\n", 
+		WHITE, timestamp, RESET, philo->id + 1, RED, DEATH_SYMBOL, RESET);
+	pthread_mutex_unlock(&philo->table->print_mtx);
 }
 
 void	sleep_and_check(t_data *table, long ms)
