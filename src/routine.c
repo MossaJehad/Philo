@@ -6,7 +6,7 @@
 /*   By: mhasoneh <mhasoneh@student.42amman.com     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 00:00:00 by mhasoneh          #+#    #+#             */
-/*   Updated: 2025/09/04 18:26:48 by mhasoneh         ###   ########.fr       */
+/*   Updated: 2025/09/04 18:30:45 by mhasoneh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,9 @@ int	is_simulation_over(t_philo *philo)
 	int	stop;
 
 	pthread_mutex_lock(&philo->table->stop_mtx);
-	stop = get_time(philo, 1) - philo->last_meal;
+	stop = philo->table->stop;
 	pthread_mutex_unlock(&philo->table->stop_mtx);
-	return (stop > philo->table->die_time);
+	return (stop);
 }
 
 static void	think(t_philo *philo)
